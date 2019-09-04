@@ -1,0 +1,84 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+
+
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2){
+        ListNode sumHeader = new ListNode(0);//header node for the sum
+        int dig;//dig will be the new digit of the sum
+        int length1=0;//length of l1
+        int length2=0;//length of l2
+        int small;
+        int big;
+        int carry=0;//signify if a carry over is needed
+        
+        ListNode current1 = l1;
+        ListNode current2 = l2;
+        
+        //find the shorter linkedlist
+        while(current1.next!=null || current2.next!=null){
+            if(current1.next!=null){length1+=1;current1=current1.next;}
+            if(current2.next!=null){length2+=1;current2=current2.next;}
+        }
+        
+        //make small and big variable the size of the smaller and bigger list respectively
+        if (length1<length2){
+            small=length1;
+            big=length2;
+        }
+        
+        else{
+            small=length2;
+            big=length1;
+        }
+
+        //initialize p1 and p2 to be l1 and l2
+        ListNode p1=length1<length2?l1:l2;//p1 is the smaller linked list
+        ListNode p2=length2>length1?l2:l1;//p2 is the bigger linked list
+        if(length1==length2){p1=l1;p2=l2;}//if they're the same size make p1 l1 by default
+        
+        //compute what the current digit should be
+        for(int i=0;i<=small;i++){//add numbers as long as the shorter list has numbers
+            dig = p1.val + p2.val + carry;//dig is value of the current column
+            if(dig>=10){dig-=10;carry = 1;}
+            else{carry=0;}
+
+            append(dig,sumHeader);//need to add it to the linked list in reversed order
+
+            //move on to the next digit if we aren't at the end yet
+            p1 = p1.next;
+            p2 = p2.next;
+        }//end while
+        
+        for(int j=0;j<big-small;j++){//add numbers after the shorter list has ended
+            dig = p2.val + carry;
+            //account for carry over of next column
+            if(dig>=10){dig-=10;carry = 1;}
+            else{carry=0;}
+
+            //need to add it to the linked list in reversed order
+            append(dig,sumHeader);
+            p2=p2.next;
+        }
+        
+        if(carry==1){
+            //need to add it to the linked list in reversed order
+            append(carry,sumHeader);
+            carry=0;
+        }
+        
+        return sumHeader.next;
+    }
+    
+    public void append(int digit, ListNode header){
+        ListNode current = header;
+        while (current.next!=null){current = current.next;}
+        current.next = new ListNode(digit);    
+    }
+}
